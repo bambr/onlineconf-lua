@@ -3,7 +3,7 @@ local cjson = require('cjson.safe');
 
 local onlineconf = {
     config_dir    = '/usr/local/etc/onlineconf',
-    expires       = 60,
+    expires       = 15,
 
     modules       = {},
     loaded        = {},
@@ -71,10 +71,19 @@ function onlineconf.module(module_name)
         return
     end
 
-    onlineconf.modules[module_name] = data
+    if onlineconf.modules[module_name] then
+        for k in pairs(onlineconf.modules[module_name]) do
+            onlineconf.modules[module_name][k] = nil
+        end
+        for k in pairs(data) do
+            onlineconf.modules[module_name][k] = data[k]
+        end
+    else
+        onlineconf.modules[module_name] = data
+    end
     onlineconf.checked[module_name] = os.time()
     onlineconf.loaded[module_name]  = onlineconf.checked[module_name]
-    return data
+    return onlineconf.modules[module_name]
 end
 
 return onlineconf;
