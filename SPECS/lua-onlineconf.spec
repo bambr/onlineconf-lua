@@ -1,5 +1,5 @@
 Name: lua-onlineconf
-Version: 1.0
+Version: 1.1
 Release: 1%{?dist}
 Summary: lua onlineconf client
 License: MIT
@@ -16,13 +16,13 @@ Simple lua onlineconf client. Only modules support.
 
 %install
 %__rm -rf %{buildroot}
-%__install -pD -m 644 %{SOURCE0} %{buildroot}%{_libdir}/lua/5.1/onlineconf.lua
+%__install -pD -m 644 %{SOURCE0} %{buildroot}%{_prefix}/lib/lua/5.1/onlineconf.lua
 
 %clean
 [ "%{buildroot}" != "/" ] && %__rm -fr %{buildroot}
 
 %files
-%{_libdir}/lua/5.1/onlineconf.lua
+%{_prefix}/lib/lua/5.1/onlineconf.lua
 
 %changelog
 * Tue May  6 2014 Sergey Panteleev <panteleev@corp.mail.ru>
