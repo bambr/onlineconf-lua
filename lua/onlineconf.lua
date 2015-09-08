@@ -1,5 +1,28 @@
-local posix = require('posix');
-local cjson = require('cjson.safe');
+local decode_json, file_ctime
+
+local ok, cjson = pcall(require, 'cjson.safe')
+if ok then
+    decode_json = function(key, value)
+        local error
+        value, error = cjson.decode(value)
+        if not value then
+            error("onlineconf: can't parse json variable "..key.." => "..value..": "..error)
+            value=nil
+        end
+        return value
+    end
+else
+    decode_json = function(key, value) return value end
+end
+
+local ok, posix = pcall(require, 'posix');
+if ok then
+    file_ctime = function(filename) return posix.stat(filename, 'ctime') end
+elseif os.ctime then
+    file_ctime = os.ctime
+else
+    file_ctime = nil
+end
 
 local onlineconf = {
     config_dir    = '/usr/local/etc/onlineconf',
@@ -12,7 +35,7 @@ local onlineconf = {
 
 
 local function _get_module_filename(module_name)
-    if module_name:match('[^%w\-]') then
+    if module_name:match('[^%w%-]') then
         error("onlineconf: invalid onlineconf module '"  .. module_name .. "'")
     end
     return onlineconf.config_dir .. '/' .. module_name .. '.conf'
@@ -23,7 +46,7 @@ function onlineconf.module(module_name)
         if os.time()-onlineconf.checked[module_name] < onlineconf.expires then
 -- print "DEBUG: not expired"
             return onlineconf.modules[module_name]
-        elseif posix.stat( _get_module_filename(module_name), 'mtime') == onlineconf.loaded[module_name] then
+        elseif file_ctime and file_ctime( _get_module_filename(module_name) ) < onlineconf.loaded[module_name] then
 -- print "DEBUG: not changed"
             onlineconf.checked[module_name] = os.time()
             return onlineconf.modules[module_name]
@@ -48,13 +71,8 @@ function onlineconf.module(module_name)
                 value = value:gsub("\\n", "\n")
                 local is_json = key:match("^(.+):JSON$");
                 if is_json and value then
-                    local error;
                     key = is_json;
-                    value, error = cjson.decode(value)
-                    if not value then
-                        error("onlineconf: can't parse json variable "..key.." => "..value..": "..error)
-                        value=nil
-                    end
+                    value = decode_json(key, value)
                 end
                 data[key] = value
             end

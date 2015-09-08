@@ -1,5 +1,5 @@
 Name: lua-onlineconf
-Version: 1.1
+Version: 1.2
 Release: 1%{?dist}
 Summary: lua onlineconf client
 License: MIT
