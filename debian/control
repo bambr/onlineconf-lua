@@ -1,0 +1,18 @@
+Source: lua-onlineconf
+Priority: optional
+Maintainer: Sergey Panteleev <sergey.panteleev@my.games>
+Build-Depends: debhelper-compat (= 13), dh-lua
+Standards-Version: 4.5.1
+Section: interpreters
+Homepage: https://github.com/onlineconf/onlineconf-lua
+Rules-Requires-Root: no
+
+Package: lua-onlineconf
+Architecture: all
+Pre-Depends: ${misc:Pre-Depends}
+Depends: lua-posix, lua-cjson, ${misc:Depends}, ${shlibs:Depends}
+Provides: ${lua:Provides}
+XB-Lua-Versions: ${lua:Versions}
+Description: Lua client for OnlineConf
+ Lua module onlineconf reads configuration files generated
+ by OnlineConf updater.
