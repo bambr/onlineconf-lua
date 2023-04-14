@@ -1,4 +1,4 @@
-local VERSION = '1.3'
+local VERSION = '1.4'
 
 local posix = require('posix');
 local cjson = require('cjson.safe');
